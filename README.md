@@ -3,8 +3,6 @@
 This repository contains resources, data, and experiments for **evaluating cross-lingual and code-switching information retrieval (CS-IR)** systems.  
 It includes datasets, formal ontologies, evaluation scripts, and result summaries for various embedding and LLM-based retrieval models.
 
-> **Note:** Replace variables with your own values wherever applicable (e.g., repository name, author, contact email, environment names, and file paths).
-
 ---
 
 ## 📂 Repository Structure
@@ -73,6 +71,8 @@ It includes datasets, formal ontologies, evaluation scripts, and result summarie
 
 ### **`code/`**
 Contains the Jupyter notebooks used for data adaptation and evaluation.
+
+> **Note:** Replace code variables with your own values wherever applicable.
 
 #### ▸ `data_adaptation/`
 Notebooks for preparing datasets in different languages and code-switching scenarios:
