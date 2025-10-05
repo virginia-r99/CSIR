@@ -97,7 +97,7 @@ Contains lightweight subsets of the CS-IR dataset used in experiments:
 ---
 
 ### **`formalisation/`**
-Semantic representations (RDF/Turtle) defining the CS-IR ontology and metadata:
+Semantic representations (RDF/Turtle) defining the CS-IR formalisation and metadata:
 - `csir-adapt.ttl` — Adaptation and preprocessing formalisation.
 - `csir-data.ttl` — Dataset description.
 - `csir-exec.ttl` — Execution and evaluation process.
