@@ -3,8 +3,7 @@ Repository for Code-Switching Information Retrieval resources
 
 
 ## License
-- Code: PolyForm Noncommercial License 1.0.0
-- Text, datasets, diagrams, TTL formalisation, and model weights: CC BY-NC 4.0
+Distributed under the Apache License, Version 2.0.
+You must preserve the LICENSE and NOTICE files in any redistribution.
 
-For **commercial use**, please contact: virginia.ramon@upm.es
-See [LICENSE-CODE](LICENSE-CODE) and [LICENSE-NONCODE](LICENSE-NONCODE).
+Please cite this work if you use it (see NOTICE and CITATION.cff).
