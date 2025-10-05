@@ -1,0 +1,290 @@
+@base   <urn:csir:formalisation> .
+@prefix csir: <#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+
+#################################################################
+
+#################################################################
+
+csir:data-module a skos:ConceptScheme ;
+  dct:title       "CSIR Data Formalisation (Draft)"@en ;
+  dct:description "Core terms for datasets, splits, queries, documents, and qrels."@en ;
+  dct:modified    "2025-09-11"^^xsd:date ;
+  dct:hasVersion  "0.1.0" .
+
+#################################################################
+# Core Classes
+#################################################################
+
+csir:Dataset a rdfs:Class  ;
+  rdfs:label "CSIR Dataset"@en  ;
+  rdfs:subClassOf prov:Entity .
+
+csir:Split a rdfs:Class  ;
+  rdfs:label "CSIR Split"@en  ;
+  rdfs:subClassOf csir:Dataset .
+
+csir:Document a rdfs:Class  ;
+  rdfs:label "Document"@en  ;
+  rdfs:subClassOf prov:Entity .
+
+csir:Query a rdfs:Class  ;
+  rdfs:label "Query"@en  ;
+  rdfs:subClassOf prov:Entity .
+
+csir:Qrel a rdfs:Class  ;
+  rdfs:label "Qrel"@en  ;
+  rdfs:comment "A judged relevance assertion linking a Query and a Document, optionally with a graded score/label."@en  ;
+  rdfs:subClassOf prov:Entity ,
+    [ a owl:Restriction ; owl:onProperty dct:language ; owl:maxCardinality "0"^^xsd:nonNegativeInteger ] .
+
+#################################################################
+# Structural Relations
+#################################################################
+
+csir:hasSplit a owl:ObjectProperty  ;
+  rdfs:label "has split"@en  ;
+  rdfs:domain csir:Dataset  ;
+  rdfs:range  csir:Split  ;
+  rdfs:subPropertyOf dct:hasPart .
+
+csir:isSplitOf a owl:ObjectProperty  ;
+  rdfs:label "is split of"@en  ;
+  rdfs:domain csir:Split  ;
+  rdfs:range  csir:Dataset  ;
+  rdfs:subPropertyOf dct:isPartOf .
+
+csir:hasDocumentItem a owl:ObjectProperty  ;
+  rdfs:label "has document (item)"@en  ;
+  rdfs:domain csir:Split  ;
+  rdfs:range  csir:Document  ;
+  rdfs:subPropertyOf dct:hasPart .
+
+csir:isDocumentOfSplit a owl:ObjectProperty  ;
+  rdfs:label "is document of split"@en  ;
+  rdfs:domain csir:Document  ;
+  rdfs:range  csir:Split  ;
+  rdfs:subPropertyOf dct:isPartOf .
+
+csir:hasQueryItem a owl:ObjectProperty  ;
+  rdfs:label "has query (item)"@en  ;
+  rdfs:domain csir:Split  ;
+  rdfs:range  csir:Query  ;
+  rdfs:subPropertyOf dct:hasPart .
+
+csir:isQueryOfSplit a owl:ObjectProperty  ;
+  rdfs:label "is query of split"@en  ;
+  rdfs:domain csir:Query  ;
+  rdfs:range  csir:Split  ;
+  rdfs:subPropertyOf dct:isPartOf .
+
+csir:hasQrelItem a owl:ObjectProperty  ;
+  rdfs:label "has qrel (item)"@en  ;
+  rdfs:domain csir:Split  ;
+  rdfs:range  csir:Qrel  ;
+  rdfs:subPropertyOf dct:hasPart .
+
+csir:isQrelOfSplit a owl:ObjectProperty  ;
+  rdfs:label "is qrel of split"@en  ;
+  rdfs:domain csir:Qrel  ;
+  rdfs:range  csir:Split  ;
+  rdfs:subPropertyOf dct:isPartOf .
+
+#################################################################
+# Qrel ↔ Query/Document
+#################################################################
+
+csir:qrelQuery a owl:ObjectProperty  ;
+  rdfs:label "qrel query"@en  ;
+  rdfs:domain csir:Qrel  ;
+  rdfs:range  csir:Query .
+
+csir:qrelDocument a owl:ObjectProperty  ;
+  rdfs:label "qrel document"@en  ;
+  rdfs:domain csir:Qrel  ;
+  rdfs:range  csir:Document .
+
+csir:hasQrelJudgement a owl:ObjectProperty  ;
+  rdfs:label "has qrel judgement"@en  ;
+  rdfs:domain csir:Query  ;
+  rdfs:range  csir:Qrel  ;
+  owl:inverseOf csir:qrelQuery .
+
+csir:isJudgedInQrel a owl:ObjectProperty  ;
+  rdfs:label "is judged in qrel"@en  ;
+  rdfs:domain csir:Document  ;
+  rdfs:range  csir:Qrel  ;
+  owl:inverseOf csir:qrelDocument .
+
+csir:relevanceGrade a owl:DatatypeProperty  ;
+  rdfs:label "relevance grade"@en  ;
+  rdfs:comment "Numeric grade (e.g., 0,1,2,3)."@en  ;
+  rdfs:domain csir:Qrel  ;
+  rdfs:range  xsd:integer .
+
+csir:hasJudgedDocument a owl:ObjectProperty  ;
+  rdfs:label "has judged document"@en  ;
+  rdfs:domain csir:Query  ;
+  rdfs:range  csir:Document  ;
+  owl:propertyChainAxiom ( csir:hasQrelJudgement csir:qrelDocument ) .
+
+csir:hasJudgedQuery a owl:ObjectProperty  ;
+  rdfs:label "has judged query"@en  ;
+  rdfs:domain csir:Document  ;
+  rdfs:range  csir:Query  ;
+  owl:propertyChainAxiom ( csir:isJudgedInQrel csir:qrelQuery ) .
+
+#################################################################
+# Distributions
+#################################################################
+
+csir:hasCorpusDistribution a owl:ObjectProperty  ;
+  rdfs:label "has corpus distribution"@en  ;
+  rdfs:domain csir:Dataset .
+
+csir:hasQueriesDistribution a owl:ObjectProperty  ;
+  rdfs:label "has queries distribution"@en  ;
+  rdfs:domain csir:Dataset .
+
+csir:hasQrelsDistribution a owl:ObjectProperty  ;
+  rdfs:label "has qrels distribution"@en  ;
+  rdfs:domain csir:Dataset .
+
+#################################################################
+# Metadata Alignments
+#################################################################
+
+csir:description a owl:AnnotationProperty  ;
+  rdfs:label "description"@en  ;
+  rdfs:subPropertyOf dct:description .
+
+csir:version a owl:AnnotationProperty  ;
+  rdfs:label "version"@en  ;
+  rdfs:subPropertyOf owl:versionInfo .
+
+csir:datasetId a owl:DatatypeProperty  ;
+  rdfs:label "dataset identifier"@en  ;
+  rdfs:domain csir:Dataset  ;
+  rdfs:range  xsd:string  ;
+  rdfs:subPropertyOf dct:identifier .
+
+csir:license a owl:ObjectProperty  ;
+  rdfs:label "license"@en  ;
+  rdfs:range  dct:LicenseDocument  ;
+  rdfs:subPropertyOf dct:license .
+
+csir:creator a owl:ObjectProperty  ;
+  rdfs:label "creator"@en  ;
+  rdfs:subPropertyOf dct:creator .
+
+#################################################################
+# Language modeling
+#################################################################
+
+csir:hasLanguage a owl:ObjectProperty  ;
+  rdfs:label "has language (alias of dct:language)"@en  ;
+  rdfs:subPropertyOf dct:language  ;
+  rdfs:range skos:Concept .
+
+csir:documentsLanguage a owl:ObjectProperty  ;
+  rdfs:label "documents language(s)"@en  ;
+  rdfs:domain csir:Split  ;
+  rdfs:range  skos:Concept  ;
+  rdfs:subPropertyOf dct:language .
+
+csir:queriesLanguage a owl:ObjectProperty  ;
+  rdfs:label "queries language(s)"@en  ;
+  rdfs:domain csir:Split  ;
+  rdfs:range  skos:Concept  ;
+  rdfs:subPropertyOf dct:language .
+
+csir:documentsLanguage owl:propertyChainAxiom ( csir:hasCorpusDistribution dct:language ) .
+csir:documentsLanguage owl:propertyChainAxiom ( csir:hasDocumentItem dct:language ) .
+csir:queriesLanguage   owl:propertyChainAxiom ( csir:hasQueriesDistribution dct:language ) .
+csir:queriesLanguage   owl:propertyChainAxiom ( csir:hasQueryItem dct:language ) .
+
+csir:hasLanguageMode a owl:ObjectProperty  ;
+  rdfs:label "has language mode"@en  ;
+  rdfs:range csir:LanguageModeConcept .
+
+csir:documentsLanguageMode a owl:ObjectProperty  ;
+  rdfs:label "documents language mode"@en  ;
+  rdfs:domain csir:Split  ;
+  rdfs:range  csir:LanguageModeConcept .
+
+csir:queriesLanguageMode a owl:ObjectProperty  ;
+  rdfs:label "queries language mode"@en  ;
+  rdfs:domain csir:Split  ;
+  rdfs:range  csir:LanguageModeConcept .
+
+#################################################################
+# Provenance 
+#################################################################
+
+# Datasets/splits may be produced by an activity
+csir:producedBy a owl:ObjectProperty  ;
+  rdfs:label "produced by"@en  ;
+  rdfs:domain csir:Dataset  ;
+  rdfs:range  prov:Activity  ;
+  rdfs:subPropertyOf prov:wasGeneratedBy .
+
+#################################################################
+# Vocabularies
+#################################################################
+
+csir:LanguageScheme a skos:ConceptScheme  ;
+  dct:title "Languages used in CSIR datasets"@en  ;
+  dct:description "Controlled vocabulary of languages, typically keyed by BCP-47 tags (e.g., en, zh-Hant)."@en .
+
+csir:LanguageConcept a rdfs:Class  ;
+  rdfs:label "Language concept"@en  ;
+  rdfs:subClassOf skos:Concept .
+
+csir:Lang-en a csir:LanguageConcept  ;
+  skos:prefLabel "English"@en  ;
+  skos:notation "en"  ;
+  skos:inScheme csir:LanguageScheme  ;
+  skos:topConceptOf csir:LanguageScheme .
+
+csir:Lang-zh a csir:LanguageConcept  ;
+  skos:prefLabel "Chinese"@en  ;
+  skos:notation "zh"  ;
+  skos:inScheme csir:LanguageScheme  ;
+  skos:topConceptOf csir:LanguageScheme .
+
+csir:LanguageScheme skos:hasTopConcept csir:Lang-en , csir:Lang-zh .
+
+csir:hasLanguage        rdfs:range csir:LanguageConcept .     # alias of dct:language
+csir:documentsLanguage  rdfs:range csir:LanguageConcept .
+csir:queriesLanguage    rdfs:range csir:LanguageConcept .
+
+csir:expectsLanguage    rdfs:range csir:LanguageConcept .     # was skos:Concept
+
+csir:sourceLanguage     rdfs:range csir:LanguageConcept .
+csir:targetLanguage     rdfs:range csir:LanguageConcept .
+
+csir:LanguageModeScheme a skos:ConceptScheme  ;
+  dct:title "Language modes"@en  ;
+  dct:description "Describes language usage patterns within items or interactions."@en .
+
+csir:LanguageModeConcept a rdfs:Class  ;
+  rdfs:label "Language mode concept"@en  ;
+  rdfs:subClassOf skos:Concept .
+
+csir:Mode-Monolingual a csir:LanguageModeConcept  ;
+  skos:prefLabel "Monolingual"@en  ;
+  skos:definition "Items predominantly in a single language."@en  ;
+  skos:notation "mono"  ;
+  skos:inScheme csir:LanguageModeScheme .
+
+csir:Mode-CodeSwitched a csir:LanguageModeConcept  ;
+  skos:prefLabel "Code-switched / Code-mixed"@en  ;
+  skos:definition "Any form or degree of language mixing, including intra-/inter-sentential switches and weaker/stronger mixing."@en  ;
+  skos:notation "cm"  ;
+  skos:inScheme csir:LanguageModeScheme .

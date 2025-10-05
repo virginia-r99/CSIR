@@ -1,0 +1,99 @@
+@base   <urn:csir:formalisation> .
+@prefix csir: <#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+@prefix prov:  <http://www.w3.org/ns/prov#> .
+@prefix dct:   <http://purl.org/dc/terms/> .
+#################################################################
+
+#################################################################
+
+csir:model-module a skos:ConceptScheme ;
+  dct:title       "CSIR Model Formalisation (Draft)"@en ;
+  dct:description "Minimal terms for embedding/LLM models and simple strategy hints."@en ;
+  dct:modified    "2025-09-11"^^xsd:date ;
+  dct:hasVersion  "0.1.0" .
+
+
+#################################################################
+# Core classes
+#################################################################
+
+csir:Model a rdfs:Class ;
+  rdfs:label "CSIR Model"@en .
+
+csir:LanguageModel a rdfs:Class ;
+  rdfs:subClassOf csir:Model ;
+  rdfs:label "Language Model"@en .
+
+csir:EmbeddingModel a rdfs:Class ;
+  rdfs:subClassOf csir:Model ;
+  rdfs:label "Embedding Model"@en .
+
+csir:LLMModel a rdfs:Class ;
+  rdfs:subClassOf csir:LanguageModel ;
+  rdfs:label "LLM Model"@en ;
+  rdfs:comment "A language model (decoder/seq2seq) intended for prompting/generation."@en .
+
+csir:LLMEmbeddingModel a rdfs:Class ;
+  rdfs:subClassOf csir:EmbeddingModel , csir:LLMModel ;
+  rdfs:label "LLM-based Embedding Model"@en ;
+  rdfs:comment "An embedding model adapted from an LLM via prompting/pooling; not a native embedding model."@en .
+
+#################################################################
+# Concept classes
+#################################################################
+
+csir:PoolingStrategyConcept a rdfs:Class ;
+  rdfs:subClassOf skos:Concept ;
+  rdfs:label "Pooling Strategy Concept"@en .
+
+csir:PromptStrategyConcept a rdfs:Class ;
+  rdfs:subClassOf skos:Concept ;
+  rdfs:label "Prompt Strategy Concept"@en ;
+  rdfs:comment "Controlled vocabulary of strategies/templates for eliciting embeddings from an LLM."@en .
+
+#################################################################
+# Properties
+#################################################################
+
+csir:modelId a owl:DatatypeProperty ;
+  rdfs:domain csir:Model ;
+  rdfs:range xsd:string ;
+  rdfs:label "model identifier"@en .
+
+csir:creator a owl:ObjectProperty ;
+  rdfs:subPropertyOf dct:creator ;
+  rdfs:label "creator"@en .
+
+csir:license a owl:ObjectProperty ;
+  rdfs:subPropertyOf dct:license ;
+  rdfs:range dct:LicenseDocument ;
+  rdfs:label "license"@en .
+
+csir:derivedFrom a owl:ObjectProperty ;
+  rdfs:subPropertyOf prov:wasDerivedFrom ;
+  rdfs:domain csir:Model ;
+  rdfs:range csir:Model ;
+  rdfs:label "derived from"@en .
+ 
+csir:adaptsFrom a owl:ObjectProperty ;
+  rdfs:subPropertyOf csir:derivedFrom , prov:wasDerivedFrom ;
+  rdfs:domain csir:LLMEmbeddingModel ;
+  rdfs:range csir:LLMModel ;
+  rdfs:label "adapts from"@en ;
+  rdfs:comment "Links an LLM-based embedding model to the underlying base LLM it adapts."@en .
+
+csir:hasPoolingStrategy a owl:ObjectProperty ;
+  rdfs:domain csir:LLMEmbeddingModel ;
+  rdfs:range csir:PoolingStrategyConcept ;
+  rdfs:label "has pooling strategy"@en .
+
+csir:hasPromptStrategy a owl:ObjectProperty ;
+  rdfs:domain csir:LLMEmbeddingModel ;
+  rdfs:range csir:PromptStrategyConcept ;
+  rdfs:label "has prompt strategy"@en ;
+  rdfs:comment "Which prompt strategy/template is used to elicit embeddings from the base LLM."@en .

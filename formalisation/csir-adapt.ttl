@@ -1,0 +1,107 @@
+@base   <urn:csir:formalisation> .
+@prefix csir: <#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+
+#################################################################
+# Module header
+#################################################################
+
+csir:adapt-module a skos:ConceptScheme ;
+  dct:title       "CSIR Adaptation Formalisation (Draft)"@en ;
+  dct:description "Adaptation runs that generate code-switched splits from source splits. Depends only on Data."@en ;
+  dct:modified    "2025-10-05"^^xsd:date ;
+  dct:hasVersion  "0.2.3" .
+
+#################################################################
+# Core classes
+#################################################################
+
+csir:AdaptationRun a rdfs:Class ;
+  rdfs:label   "Adaptation run"@en ;
+  rdfs:comment "Pipeline execution transforming a source Split into an adapted Split (e.g., code-switched)."@en ;
+  rdfs:subClassOf prov:Activity .
+
+csir:AdaptationPipeline a rdfs:Class ;
+  rdfs:label   "Adaptation pipeline"@en ;
+  rdfs:comment "Logical pipeline description (optional)."@en .
+
+csir:Parameter a rdfs:Class ;
+  rdfs:label   "Parameter"@en ;
+  rdfs:comment "Name/value pair for adaptation settings (e.g., targetSwitchRate)."@en .
+
+csir:AdaptationStep a rdfs:Class ;
+  rdfs:label   "Adaptation step"@en ;
+  rdfs:comment "An individual step/stage within an adaptation pipeline (e.g., POS tagging, alignment, switch insertion)."@en .
+
+#################################################################
+# Properties
+#################################################################
+
+csir:executesPipeline a owl:ObjectProperty ;
+  rdfs:label  "executes pipeline"@en ;
+  rdfs:domain csir:AdaptationRun ;
+  rdfs:range  csir:AdaptationPipeline .
+
+csir:usedSourceSplit a owl:ObjectProperty ;
+  rdfs:label  "used source split"@en ;
+  rdfs:domain csir:AdaptationRun ;
+  rdfs:range  csir:Split ;
+  rdfs:subPropertyOf prov:used .
+
+csir:generatedSplit a owl:ObjectProperty ;
+  rdfs:label  "generated split"@en ;
+  rdfs:domain csir:AdaptationRun ;
+  rdfs:range  csir:Split ;
+  rdfs:subPropertyOf prov:generated .
+
+csir:hasParameter a owl:ObjectProperty ;
+  rdfs:label  "has parameter"@en ;
+  rdfs:domain csir:AdaptationRun ;
+  rdfs:range  csir:Parameter .
+
+csir:paramName a owl:DatatypeProperty ;
+  rdfs:label  "param name"@en ;
+  rdfs:domain csir:Parameter ;
+  rdfs:range  xsd:string .
+
+csir:paramValue a owl:DatatypeProperty ;
+  rdfs:label  "param value"@en ;
+  rdfs:domain csir:Parameter ;
+  rdfs:range  xsd:string .
+
+csir:hasStep a owl:ObjectProperty ;
+  rdfs:label  "has step"@en ;
+  rdfs:comment "Declares a step that is part of a pipeline."@en ;
+  rdfs:domain csir:AdaptationPipeline ;
+  rdfs:range  csir:AdaptationStep .
+
+csir:stepIndex a owl:DatatypeProperty ;
+  rdfs:label  "step index"@en ;
+  rdfs:comment "Zero- or one-based position of the step within the pipeline."@en ;
+  rdfs:domain csir:AdaptationStep ;
+  rdfs:range  xsd:integer .
+
+csir:stepName a owl:DatatypeProperty ;
+  rdfs:label  "step name"@en ;
+  rdfs:comment "Human-readable step name (e.g., 'pos-tagging', 'alignment')."@en ;
+  rdfs:domain csir:AdaptationStep ;
+  rdfs:range  xsd:string .
+
+csir:usedStep a owl:ObjectProperty ;
+  rdfs:label  "used step"@en ;
+  rdfs:comment "Indicates that an adaptation run involved a particular step definition."@en ;
+  rdfs:domain csir:AdaptationRun ;
+  rdfs:range  csir:AdaptationStep ;
+  rdfs:subPropertyOf prov:used .
+
+csir:nextStep a owl:ObjectProperty ;
+  rdfs:label  "next step"@en ;
+  rdfs:comment "Link to the subsequent step to form an explicit sequence (optional)."@en ;
+  rdfs:domain csir:AdaptationStep ;
+  rdfs:range  csir:AdaptationStep .

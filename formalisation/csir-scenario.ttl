@@ -1,0 +1,62 @@
+@base   <urn:csir:formalisation> .
+@prefix csir: <#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+
+#################################################################
+# Module header
+#################################################################
+
+csir:scenario-module a skos:ConceptScheme ;
+  dct:title       "CSIR Scenario Formalisation (Draft)"@en ;
+  dct:description "Bindings between dataset/split, model, task, and language mode (no results)."@en ;
+  dct:modified    "2025-09-11"^^xsd:date ;
+  dct:hasVersion  "0.2.0" .
+
+#################################################################
+# Core class
+#################################################################
+
+csir:Scenario a rdfs:Class ;
+  rdfs:label   "Scenario"@en ;
+  rdfs:comment "Declarative experiment plan: what to evaluate (dataset/split, model, task, language mode). No metrics/results here."@en .
+
+#################################################################
+# Scenario links 
+#################################################################
+
+csir:targetsDataset a owl:ObjectProperty ;
+  rdfs:label  "targets dataset"@en ;
+  rdfs:domain csir:Scenario ;
+  rdfs:range  csir:Dataset .
+
+csir:targetsSplit a owl:ObjectProperty ;
+  rdfs:label  "targets split"@en ;
+  rdfs:domain csir:Scenario ;
+  rdfs:range  csir:Split .
+
+csir:targetsModel a owl:ObjectProperty ;
+  rdfs:label  "targets model"@en ;
+  rdfs:domain csir:Scenario ;
+  rdfs:range  csir:Model .
+
+csir:hasTask a owl:ObjectProperty ;
+  rdfs:label  "has task"@en ;
+  rdfs:domain csir:Scenario ;
+  rdfs:range  csir:Task .
+
+#################################################################
+# Language mode
+#################################################################
+
+csir:languageMode a owl:DatatypeProperty ;
+  rdfs:label  "language mode"@en ;
+  rdfs:comment "Simple code for the query language mode (e.g., mono, xling, cs)."@en ;
+  rdfs:domain csir:Scenario ;
+  rdfs:range  xsd:string .
+

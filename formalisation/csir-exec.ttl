@@ -1,0 +1,139 @@
+@base   <urn:csir:formalisation> .
+@prefix csir: <#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+
+#################################################################
+# Module header
+#################################################################
+
+csir:exec-module a skos:ConceptScheme ;
+  dct:title       "CSIR Execution Formalisation (Draft)"@en ;
+  dct:description "Concrete evaluation runs (provenance + configuration) and results with metric values. Depends on Scenario and Metric."@en ;
+  dct:modified    "2025-10-05"^^xsd:date ;
+  dct:hasVersion  "0.2.0" .
+
+#################################################################
+# Core classes
+#################################################################
+
+csir:Execution a rdfs:Class ;
+  rdfs:label   "Execution"@en ;
+  rdfs:comment "A concrete evaluation run of a Scenario; records inputs/config and produces Results."@en ;
+  rdfs:subClassOf prov:Activity .
+
+csir:Result a rdfs:Class ;
+  rdfs:label   "Result"@en ;
+  rdfs:comment "A bundle of metric values produced by an Execution."@en .
+
+# NEW: very general environment classes
+csir:Software a rdfs:Class ;
+  rdfs:label   "Software"@en ;
+  rdfs:comment "Software artifact used during an execution (e.g., library, toolkit, runtime)."@en .
+
+csir:Hardware a rdfs:Class ;
+  rdfs:label   "Hardware"@en ;
+  rdfs:comment "Hardware resource used during an execution (e.g., CPU, GPU, accelerator)."@en .
+
+#################################################################
+# Link Execution to Scenario
+#################################################################
+
+csir:forScenario a owl:ObjectProperty ;
+  rdfs:label  "for scenario"@en ;
+  rdfs:comment "Execution is an instance of running a given Scenario."@en ;
+  rdfs:domain csir:Execution ;
+  rdfs:range  csir:Scenario ;
+  rdfs:subPropertyOf prov:used .
+
+#################################################################
+# Execution → Result
+#################################################################
+
+csir:hasResult a owl:ObjectProperty ;
+  rdfs:label  "has result"@en ;
+  rdfs:domain csir:Execution ;
+  rdfs:range  csir:Result ;
+  rdfs:subPropertyOf prov:generated .
+
+csir:resultOf a owl:ObjectProperty ;
+  rdfs:label  "result of execution"@en ;
+  rdfs:domain csir:Result ;
+  rdfs:range  csir:Execution ;
+  rdfs:subPropertyOf prov:wasGeneratedBy ;
+  owl:inverseOf csir:hasResult .
+
+#################################################################
+# Results carry metric values
+#################################################################
+
+csir:hasMetricValue a owl:ObjectProperty ;
+  rdfs:label  "has metric value"@en ;
+  rdfs:domain csir:Result ;
+  rdfs:range  csir:MetricValue .
+
+# Optional inverse for convenience
+csir:ofResult a owl:ObjectProperty ;
+  rdfs:label  "of result"@en ;
+  owl:inverseOf csir:hasMetricValue ;
+  rdfs:domain csir:MetricValue ;
+  rdfs:range  csir:Result .
+
+#################################################################
+# Environment used by the execution (kept local; no extra module deps)
+#################################################################
+
+# NEW: minimal links to record software/hardware used in a run
+csir:usedSoftware a owl:ObjectProperty ;
+  rdfs:label  "used software"@en ;
+  rdfs:domain csir:Execution ;
+  rdfs:range  csir:Software ;
+  rdfs:subPropertyOf prov:used .
+
+csir:usedHardware a owl:ObjectProperty ;
+  rdfs:label  "used hardware"@en ;
+  rdfs:domain csir:Execution ;
+  rdfs:range  csir:Hardware ;
+  rdfs:subPropertyOf prov:used .
+
+#################################################################
+# Run-time specific
+#################################################################
+
+csir:retrievalTopK a owl:DatatypeProperty ;
+  rdfs:label  "retrieval top-K"@en ;
+  rdfs:domain csir:Execution ;
+  rdfs:range  xsd:integer .
+
+csir:poolSize a owl:DatatypeProperty ;
+  rdfs:label  "pool size"@en ;
+  rdfs:domain csir:Execution ;
+  rdfs:range  xsd:integer .
+
+csir:randomSeed a owl:DatatypeProperty ;
+  rdfs:label  "random seed"@en ;
+  rdfs:domain csir:Execution ;
+  rdfs:range  xsd:integer .
+
+csir:indexKind a owl:DatatypeProperty ;
+  rdfs:label  "index kind"@en ;
+  rdfs:comment "ANN/index config summary, e.g., 'faiss-IVF1024,PQ64'."@en ;
+  rdfs:domain csir:Execution ;
+  rdfs:range  xsd:string .
+
+csir:promptStrategyId a owl:DatatypeProperty ;
+  rdfs:label  "prompt strategy id"@en ;
+  rdfs:comment "Identifier used if this run overrides the Scenario’s default prompt strategy."@en ;
+  rdfs:domain csir:Execution ;
+  rdfs:range  xsd:string .
+
+csir:poolingStrategyId a owl:DatatypeProperty ;
+  rdfs:label  "pooling strategy id"@en ;
+  rdfs:comment "Identifier used if this run overrides the Scenario’s default pooling strategy."@en ;
+  rdfs:domain csir:Execution ;
+  rdfs:range  xsd:string .

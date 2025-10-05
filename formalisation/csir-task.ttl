@@ -1,0 +1,198 @@
+@base   <urn:csir:formalisation> .
+@prefix csir: <#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+
+#################################################################
+
+#################################################################
+
+csir:task-module a skos:ConceptScheme ;
+  dct:title       "CSIR Task Formalisation (Draft)"@en ;
+  dct:description "Task descriptors (retrieval type, query form, retrieval unit)."@en ;
+  dct:modified    "2025-09-11"^^xsd:date ;
+  dct:hasVersion  "0.1.0" .
+
+#################################################################
+# Core classes
+#################################################################
+
+csir:Task a rdfs:Class  ;
+  rdfs:label "Task"@en .
+
+csir:ScenarioTask a rdfs:Class  ;
+  rdfs:label "Scenario-scoped Task"@en  ;
+  rdfs:subClassOf csir:Task .
+
+#################################################################
+# Basic metadata
+#################################################################
+
+csir:title a owl:AnnotationProperty  ;
+  rdfs:subPropertyOf dct:title .
+
+csir:description a owl:AnnotationProperty  ;
+  rdfs:subPropertyOf dct:description .
+
+csir:taskId a owl:DatatypeProperty  ;
+  rdfs:label "task identifier"@en  ;
+  rdfs:domain csir:Task  ;
+  rdfs:range  xsd:string  ;
+  rdfs:subPropertyOf dct:identifier .
+
+#################################################################
+# Scenario ↔ Task linkage
+#################################################################
+
+# Scenarios contain Tasks
+csir:hasTask a owl:ObjectProperty  ;
+  rdfs:label "has task"@en  ;
+  rdfs:domain csir:Scenario  ;
+  rdfs:range  csir:Task  ;
+  rdfs:subPropertyOf dct:hasPart .
+
+csir:isTaskOf a owl:ObjectProperty  ;
+  rdfs:label "is task of"@en  ;
+  rdfs:domain csir:Task  ;
+  rdfs:range  csir:Scenario  ;
+  rdfs:subPropertyOf dct:isPartOf .
+
+# Convenience: infer which Task an Execution performs when it hadPlan a Scenario that hasTask T
+csir:executesTask a owl:ObjectProperty  ;
+  rdfs:label "executes task"@en  ;
+  rdfs:domain csir:Execution  ;
+  rdfs:range  csir:Task  ;
+  rdfs:subPropertyOf prov:hadPlan  ;
+  owl:propertyChainAxiom ( csir:hadPlan csir:hasTask ) .
+
+#################################################################
+# Task typing and constraints
+#################################################################
+
+csir:TaskTypeScheme a skos:ConceptScheme  ;
+  dct:title "Task types"@en .
+
+csir:TaskTypeConcept a rdfs:Class  ;
+  rdfs:subClassOf skos:Concept .
+
+csir:taskType a owl:ObjectProperty  ;
+  rdfs:label "task type"@en  ;
+  rdfs:domain csir:Task  ;
+  rdfs:range  csir:TaskTypeConcept .
+
+csir:RetrievalUnitScheme a skos:ConceptScheme  ;
+  dct:title "Retrieval unit types"@en .
+
+csir:RetrievalUnitConcept a rdfs:Class  ;
+  rdfs:subClassOf skos:Concept .
+
+csir:retrievalUnit a owl:ObjectProperty  ;
+  rdfs:label "retrieval unit"@en  ;
+  rdfs:domain csir:Task  ;
+  rdfs:range  csir:RetrievalUnitConcept .
+
+csir:QueryFormScheme a skos:ConceptScheme  ;
+  dct:title "Query forms"@en .
+
+csir:QueryFormConcept a rdfs:Class  ;
+  rdfs:subClassOf skos:Concept .
+
+csir:queryForm a owl:ObjectProperty  ;
+  rdfs:label "query form"@en  ;
+  rdfs:domain csir:Task  ;
+  rdfs:range  csir:QueryFormConcept .
+
+csir:JudgementScaleScheme a skos:ConceptScheme  ;
+  dct:title "Relevance judgement scales"@en .
+
+csir:JudgementScaleConcept a rdfs:Class  ;
+  rdfs:subClassOf skos:Concept .
+
+csir:judgementScale a owl:ObjectProperty  ;
+  rdfs:label "judgement scale"@en  ;
+  rdfs:domain csir:Task  ;
+  rdfs:range  csir:JudgementScaleConcept .
+
+# Language mode expectations (reuse LanguageModeConcept from data)
+csir:expectsLanguageMode a owl:ObjectProperty  ;
+  rdfs:label "expects language mode"@en  ;
+  rdfs:domain csir:Task  ;
+  rdfs:range  csir:LanguageModeConcept .
+
+csir:hasRecommendedMetric a owl:ObjectProperty  ;
+  rdfs:label "has recommended metric"@en  ;
+  rdfs:domain csir:Task  ;
+  rdfs:range  csir:Metric .
+
+#################################################################
+# Minimal seed vocabularies
+#################################################################
+
+# Task types
+csir:Task-DocRetrieval a csir:TaskTypeConcept  ;
+  skos:prefLabel "Document retrieval"@en  ;
+  skos:notation "doc-retrieval"  ;
+  skos:inScheme csir:TaskTypeScheme .
+
+csir:Task-PassageRetrieval a csir:TaskTypeConcept  ;
+  skos:prefLabel "Passage retrieval"@en  ;
+  skos:notation "passage-retrieval"  ;
+  skos:inScheme csir:TaskTypeScheme .
+
+csir:Task-Reranking a csir:TaskTypeConcept  ;
+  skos:prefLabel "Reranking"@en  ;
+  skos:notation "reranking"  ;
+  skos:inScheme csir:TaskTypeScheme .
+
+csir:Task-QueryExpansion a csir:TaskTypeConcept  ;
+  skos:prefLabel "Query expansion"@en  ;
+  skos:notation "query-expansion"  ;
+  skos:inScheme csir:TaskTypeScheme .
+
+# Retrieval units
+csir:Unit-Document a csir:RetrievalUnitConcept  ;
+  skos:prefLabel "Document"@en  ;
+  skos:notation "document"  ;
+  skos:inScheme csir:RetrievalUnitScheme .
+
+csir:Unit-Passage a csir:RetrievalUnitConcept  ;
+  skos:prefLabel "Passage"@en  ;
+  skos:notation "passage"  ;
+  skos:inScheme csir:RetrievalUnitScheme .
+
+csir:Unit-Chunk a csir:RetrievalUnitConcept  ;
+  skos:prefLabel "Chunk"@en  ;
+  skos:notation "chunk"  ;
+  skos:inScheme csir:RetrievalUnitScheme .
+
+# Query forms
+csir:Form-NaturalLanguage a csir:QueryFormConcept  ;
+  skos:prefLabel "Natural language"@en  ;
+  skos:notation "nl"  ;
+  skos:inScheme csir:QueryFormScheme .
+
+csir:Form-Keyword a csir:QueryFormConcept  ;
+  skos:prefLabel "Keyword"@en  ;
+  skos:notation "keyword"  ;
+  skos:inScheme csir:QueryFormScheme .
+
+csir:Form-Boolean a csir:QueryFormConcept  ;
+  skos:prefLabel "Boolean query"@en  ;
+  skos:notation "boolean"  ;
+  skos:inScheme csir:QueryFormScheme .
+
+# Judgement scales
+csir:Scale-Binary a csir:JudgementScaleConcept  ;
+  skos:prefLabel "Binary"@en  ;
+  skos:notation "binary"  ;
+  skos:inScheme csir:JudgementScaleScheme .
+
+csir:Scale-Graded a csir:JudgementScaleConcept  ;
+  skos:prefLabel "Graded (n-point)"@en  ;
+  skos:notation "graded"  ;
+  skos:inScheme csir:JudgementScaleScheme .
