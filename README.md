@@ -1,6 +1,6 @@
 # Code-Switching IR Evaluation Repository
 
-This repository contains resources, data, and experiments for **evaluating cross-lingual and code-switching information retrieval (CS-IR)** systems.  
+This repository contains resources, data, and experiments for **evaluating monolingual, cross-lingual and code-switching information retrieval (CS-IR)** systems.  
 It includes datasets, formal ontologies, evaluation scripts, and result summaries for various embedding and LLM-based retrieval models.
 
 ---
